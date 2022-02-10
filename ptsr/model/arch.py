@@ -25,7 +25,7 @@ AFFINE_LIST = ['basicblock', 'bottleneck',
 
 class ResidualGroup(nn.Module):
     def __init__(self, block_type: str, n_resblocks: int, planes: int,
-                 short_skip: bool = False, out_conv: bool = False, 
+                 short_skip: bool = False, out_conv: bool = False,
                  df_conv: bool = False, **kwargs):
         super().__init__()
         self.short_skip = short_skip
@@ -61,7 +61,7 @@ class ISRNet(nn.Module):
 
         modules_tail = [
             Upsampler(scale, planes, act_mode, use_affine=(
-                block_type in AFFINE_LIST)),
+                    block_type in AFFINE_LIST)),
             conv3x3(planes, channels, bias=True)]
 
         self.head = nn.Sequential(*modules_head)
@@ -90,9 +90,9 @@ class Model(nn.Module):
         self.chop = cfg.DATASET.CHOP
         self.chop_options = (cfg.DATASET.CHOP_PAD, cfg.DATASET.CHOP_THRES)
         self.overlap = cfg.DATASET.OVERLAP.ENABLED
-        if self.overlap: # overlap inference overwrite chop
+        if self.overlap:  # overlap inference overwrite chop
             self.chop = False
-            self.overlap_options = (cfg.DATASET.OVERLAP.STRIDE, 
+            self.overlap_options = (cfg.DATASET.OVERLAP.STRIDE,
                                     cfg.DATASET.OVERLAP.SIZE)
 
         self.model = self.make_model(cfg)
@@ -117,9 +117,9 @@ class Model(nn.Module):
             'multFlag': cfg.MODEL.MULT_FLAG,
             'reduction': cfg.MODEL.SE_REDUCTION,  # SE block
             'affine_init_w': cfg.MODEL.AFFINE_INIT_W,
-            'df_conv': cfg.MODEL.DEFORM_CONV, # Deformable convolution
+            'df_conv': cfg.MODEL.DEFORM_CONV,  # Deformable convolution
             'zero_inti_residual': cfg.MODEL.ZERO_INIT_RESIDUAL,
-            'res_scale': cfg.MODEL.RES_SCALE, # Scale of residual connection
+            'res_scale': cfg.MODEL.RES_SCALE,  # Scale of residual connection
             'res_scale_learnable': cfg.MODEL.RES_SCALE_LEARNABLE,
             'normal_init_std': cfg.MODEL.NORMAL_INIT_STD,
         }
@@ -133,7 +133,7 @@ class Model(nn.Module):
         elif isinstance(prob, list):
             assert len(prob) == 2
             n = cfg.MODEL.N_RESGROUPS
-            temp = np.arange(n) / float(n-1)
+            temp = np.arange(n) / float(n - 1)
             prob_list = prob[0] + temp * (prob[1] - prob[0])
             options['prob'] = list(prob_list)
 
@@ -148,7 +148,7 @@ class Model(nn.Module):
             forward_func = self.forward_patch
         elif self.overlap:
             forward_func = self.forward_overlap
-        else: # whole-image inference
+        else:  # whole-image inference
             forward_func = self.model.forward
 
         if self.ensemble:
@@ -196,14 +196,14 @@ class Model(nn.Module):
 
     def forward_ensemble(self, x, forward_func: Callable):
         def _transform(data, xflip, yflip, transpose, reverse=False):
-            if not reverse: # forward transform
+            if not reverse:  # forward transform
                 if xflip:
                     data = torch.flip(data, [3])
                 if yflip:
                     data = torch.flip(data, [2])
                 if transpose:
                     data = torch.transpose(data, 2, 3)
-            else: # reverse transform
+            else:  # reverse transform
                 if transpose:
                     data = torch.transpose(data, 2, 3)
                 if yflip:
@@ -245,37 +245,41 @@ class Model(nn.Module):
 
         for i in range(num_sample):
             pos = get_pos_test(i, sz, stride, patch_size, image_size)
-            x_in = x[:, :, pos[0]:pos[0]+patch_size[0], pos[1]:pos[1]+patch_size[1]]
+            x_in = x[:, :, pos[0]:pos[0] + patch_size[0], pos[1]:pos[1] + patch_size[1]]
             x_out = self.model(x_in).cpu()
             pos = [x * self.scale for x in pos]
-            output[:, :, pos[0]:pos[0]+out_sz[0], pos[1]:pos[1]+out_sz[1]] = x_out * ww
-            weight[:, :, pos[0]:pos[0]+out_sz[0], pos[1]:pos[1]+out_sz[1]] = ww
+            output[:, :, pos[0]:pos[0] + out_sz[0], pos[1]:pos[1] + out_sz[1]] = x_out * ww
+            weight[:, :, pos[0]:pos[0] + out_sz[0], pos[1]:pos[1] + out_sz[1]] = ww
 
         return output / weight
+
 
 # utils for forward_overlap
 
 def index_to_location(index, sz):
     pos = [0, 0]
-    pos[0] = np.floor(index/sz[1])
+    pos[0] = np.floor(index / sz[1])
     pos[1] = index % sz[1]
     return pos
 
+
 def get_pos_test(index, sz, stride, patch_size, image_size):
     pos = index_to_location(index, sz)
-    for i in range(2): 
-        if pos[i] != sz[i]-1:
+    for i in range(2):
+        if pos[i] != sz[i] - 1:
             pos[i] = int(pos[i] * stride[i])
         else:
             pos[i] = int(image_size[i] - patch_size[i])
     return pos
 
+
 def count_image(data_sz, sz, stride):
     return 1 + np.ceil((data_sz - sz) / stride.astype(float)).astype(int)
 
-def blend_gaussian(sz: Union[Tuple[int], List[int]], 
-                   sigma: float=0.2, 
-                   mu: float=0.0) -> np.ndarray:  
+
+def blend_gaussian(sz: Union[Tuple[int], List[int]],
+                   sigma: float = 0.2,
+                   mu: float = 0.0) -> np.ndarray:
     """
     Gaussian blending matrix for sliding-window inference.
     Args:
@@ -283,10 +287,10 @@ def blend_gaussian(sz: Union[Tuple[int], List[int]],
         sigma (float): standard deviation of the Gaussian distribution. Default: 0.2
         mu (float): mean of the Gaussian distribution. Default: 0.0
     """
-    xx, yy = np.meshgrid(np.linspace(-1,1,sz[0], dtype=np.float32), 
-                         np.linspace(-1,1,sz[1], dtype=np.float32), 
+    xx, yy = np.meshgrid(np.linspace(-1, 1, sz[0], dtype=np.float32),
+                         np.linspace(-1, 1, sz[1], dtype=np.float32),
                          indexing='ij')
 
-    dd = np.sqrt(xx*xx + yy*yy)
-    ww = 1e-4 + np.exp(-( (dd-mu)**2 / ( 2.0 * sigma**2 )))
+    dd = np.sqrt(xx * xx + yy * yy)
+    ww = 1e-4 + np.exp(-((dd - mu) ** 2 / (2.0 * sigma ** 2)))
     return torch.from_numpy(ww.astype(np.float32)).unsqueeze(0).unsqueeze(1)

@@ -6,6 +6,7 @@ from ptsr.model import Model
 from ptsr.model.common import *
 from ptsr.model._utils import conv3x3
 
+
 class TestModel(unittest.TestCase):
     def setUp(self) -> None:
         self.device = torch.device(
@@ -26,8 +27,8 @@ class TestModel(unittest.TestCase):
         input_size = (4, c, 32, 32)
         x = torch.rand(input_size).to(self.device)
         for block in [
-                PreActBasicBlock, PreActBottleneck, MBConvBlock, PreActBasicBlockDW,
-                EDSRBlock, RCANBlock, RCANBlockDW, RCANBlockAllDW]:
+            PreActBasicBlock, PreActBottleneck, MBConvBlock, PreActBasicBlockDW,
+            EDSRBlock, RCANBlock, RCANBlockDW, RCANBlockAllDW]:
             m = block(planes=c, act_mode=act_mode).to(self.device)
             self.assertTupleEqual(input_size, m(x).size())
 

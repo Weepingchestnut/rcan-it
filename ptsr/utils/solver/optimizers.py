@@ -73,15 +73,15 @@ class LARS(Optimizer):
     """
 
     def __init__(
-        self,
-        params: Params,
-        lr: float = 1e-2,
-        momentum: float = 0.0,
-        dampening: float = 0.0,
-        weight_decay: float = 0.0,
-        nesterov: bool = False,
-        trust_coefficient: float = 0.01,
-        eps: float = 1e-8,
+            self,
+            params: Params,
+            lr: float = 1e-2,
+            momentum: float = 0.0,
+            dampening: float = 0.0,
+            weight_decay: float = 0.0,
+            nesterov: bool = False,
+            trust_coefficient: float = 0.01,
+            eps: float = 1e-8,
     ):
         if lr <= 0.0:
             raise ValueError('Invalid learning rate: {}'.format(lr))
@@ -153,7 +153,7 @@ class LARS(Optimizer):
                 if weight_decay != 0:
                     if p_norm != 0 and g_norm != 0:
                         lars_lr = p_norm / (
-                            g_norm + p_norm * weight_decay + group['eps']
+                                g_norm + p_norm * weight_decay + group['eps']
                         )
                         lars_lr *= group['trust_coefficient']
 
@@ -177,6 +177,7 @@ class LARS(Optimizer):
                 p.add_(d_p, alpha=-group['lr'])
 
         return loss
+
 
 class Lamb(Optimizer):
     r"""Implements Lamb algorithm.
@@ -213,15 +214,15 @@ class Lamb(Optimizer):
     """
 
     def __init__(
-        self,
-        params: Params,
-        lr: float = 1e-6,
-        betas: Betas2 = (0.9, 0.999),
-        eps: float = 1e-6,
-        weight_decay: float = 0,
-        clamp_value: float = 10,
-        adam: bool = False,
-        debias: bool = False,
+            self,
+            params: Params,
+            lr: float = 1e-6,
+            betas: Betas2 = (0.9, 0.999),
+            eps: float = 1e-6,
+            weight_decay: float = 0,
+            clamp_value: float = 10,
+            adam: bool = False,
+            debias: bool = False,
     ) -> None:
         if lr <= 0.0:
             raise ValueError('Invalid learning rate: {}'.format(lr))
@@ -328,7 +329,8 @@ class Lamb(Optimizer):
                 p.data.add_(adam_step, alpha=-step_size * trust_ratio)
 
         return loss
-        
+
+
 class Lamb16(Optimizer):
     r"""Implements Lamb algorithm for FP16 training.
 
@@ -364,16 +366,16 @@ class Lamb16(Optimizer):
     """
 
     def __init__(
-        self,
-        params: Params,
-        lr: float = 1e-3,
-        betas: Betas2 = (0.9, 0.999),
-        eps: float = 1e-4, # for stability
-        weight_decay: float = 0,
-        clamp_value: float = 10,
-        clamp_trust_ratio: float = 1e6,
-        adam: bool = False,
-        debias: bool = False,
+            self,
+            params: Params,
+            lr: float = 1e-3,
+            betas: Betas2 = (0.9, 0.999),
+            eps: float = 1e-4,  # for stability
+            weight_decay: float = 0,
+            clamp_value: float = 10,
+            clamp_trust_ratio: float = 1e6,
+            adam: bool = False,
+            debias: bool = False,
     ) -> None:
         if lr <= 0.0:
             raise ValueError('Invalid learning rate: {}'.format(lr))
@@ -430,7 +432,7 @@ class Lamb16(Optimizer):
                 if p.grad is None:
                     continue
 
-                grad = p.grad.data.float() # gradient in FP32
+                grad = p.grad.data.float()  # gradient in FP32
                 if grad.is_sparse:
                     msg = (
                         'Lamb16 does not support sparse gradients, '
@@ -486,4 +488,3 @@ class Lamb16(Optimizer):
                 p.data = fp32_p.half()
 
         return loss
-        

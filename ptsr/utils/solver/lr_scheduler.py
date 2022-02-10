@@ -4,6 +4,7 @@ from bisect import bisect_right
 from typing import List
 import torch
 
+
 # NOTE: PyTorch's LR scheduler interface uses names that assume the LR changes
 # only on epoch boundaries. We typically use iteration based schedules instead.
 # As a result, "epoch" (e.g., as in self.last_epoch) should be understood to mean
@@ -11,14 +12,14 @@ import torch
 
 class WarmupMultiStepLR(torch.optim.lr_scheduler._LRScheduler):
     def __init__(
-        self,
-        optimizer: torch.optim.Optimizer,
-        milestones: List[int],
-        gamma: float = 0.1,
-        warmup_factor: float = 0.001,
-        warmup_iters: int = 1000,
-        warmup_method: str = "linear",
-        last_epoch: int = -1,
+            self,
+            optimizer: torch.optim.Optimizer,
+            milestones: List[int],
+            gamma: float = 0.1,
+            warmup_factor: float = 0.001,
+            warmup_iters: int = 1000,
+            warmup_method: str = "linear",
+            last_epoch: int = -1,
     ):
         if not list(milestones) == sorted(milestones):
             raise ValueError(
@@ -47,14 +48,14 @@ class WarmupMultiStepLR(torch.optim.lr_scheduler._LRScheduler):
 
 class WarmupCosineLR(torch.optim.lr_scheduler._LRScheduler):
     def __init__(
-        self,
-        optimizer: torch.optim.Optimizer,
-        max_iters: int,
-        warmup_factor: float = 0.001,
-        warmup_iters: int = 1000,
-        warmup_method: str = "linear",
-        last_epoch: int = -1,
-        min_lr: float = 0.0, # minimal learning rate
+            self,
+            optimizer: torch.optim.Optimizer,
+            max_iters: int,
+            warmup_factor: float = 0.001,
+            warmup_iters: int = 1000,
+            warmup_method: str = "linear",
+            last_epoch: int = -1,
+            min_lr: float = 0.0,  # minimal learning rate
     ):
         self.max_iters = max_iters
         self.warmup_factor = warmup_factor
@@ -73,12 +74,12 @@ class WarmupCosineLR(torch.optim.lr_scheduler._LRScheduler):
         # instead of at 0. In the case that warmup_iters << max_iters the two are
         # very close to each other.
         return [max(self.min_lr,
-            base_lr
-            * warmup_factor
-            * 0.5
-            * (1.0 + math.cos(math.pi * self.last_epoch / self.max_iters)))
-            for base_lr in self.base_lrs
-        ]
+                    base_lr
+                    * warmup_factor
+                    * 0.5
+                    * (1.0 + math.cos(math.pi * self.last_epoch / self.max_iters)))
+                for base_lr in self.base_lrs
+                ]
 
     def _compute_values(self) -> List[float]:
         # The new interface
@@ -86,7 +87,7 @@ class WarmupCosineLR(torch.optim.lr_scheduler._LRScheduler):
 
 
 def _get_warmup_factor_at_iter(
-    method: str, iter: int, warmup_iters: int, warmup_factor: float
+        method: str, iter: int, warmup_iters: int, warmup_factor: float
 ) -> float:
     """
     Return the learning rate warmup factor at a specific iteration.

@@ -13,6 +13,7 @@ from torch.cuda.amp import autocast, GradScaler
 from .solver.build import build_swa_model
 from ..data.common import Mixup
 
+
 class Trainer():
     def __init__(self, cfg, rank, loader, model, loss, device, ckp=None):
         self.cfg = cfg
@@ -38,11 +39,11 @@ class Trainer():
             # gradient scaling for mixed-precision training
             self.scaler = GradScaler(
                 backoff_factor=0.91, growth_factor=1.1, growth_interval=5000) \
-                if self.mixed_fp else None             
+                if self.mixed_fp else None
 
         if self.cfg.AUGMENT.MIXUP.ENABLED:
-            self.mixuper = Mixup(bs = self.cfg.SOLVER.SAMPLES_PER_BATCH, 
-                beta=self.cfg.AUGMENT.MIXUP.BETA)
+            self.mixuper = Mixup(bs=self.cfg.SOLVER.SAMPLES_PER_BATCH,
+                                 beta=self.cfg.AUGMENT.MIXUP.BETA)
 
         if self.cfg.SOLVER.SWA.ENABLED and not self.cfg.SOLVER.TEST_ONLY:
             self.swa_start = self.cfg.SOLVER.SWA.START_ITER
@@ -59,7 +60,7 @@ class Trainer():
         for i in range(self.iter_start, self.iteration_total):
             if self.tail_only_iter > 0 and i > self.tail_only_iter:
                 self.freeze_tail(defrost=True)
-                self.tail_only_iter = -1 # only defrost once
+                self.tail_only_iter = -1  # only defrost once
 
             lr, hr, _ = next(self.loader_train)
             lr = lr.to(self.device, non_blocking=True)
@@ -73,7 +74,7 @@ class Trainer():
                 sr = self.model(lr)
                 loss = self.loss(sr, hr)
 
-            self.optimizer.zero_grad(set_to_none = not self.mixed_fp)
+            self.optimizer.zero_grad(set_to_none=not self.mixed_fp)
             if autocast_enabled:
                 self.scaler.scale(loss).backward()
                 self.scaler.step(self.optimizer)
@@ -82,21 +83,21 @@ class Trainer():
                 loss.backward()
                 self.optimizer.step()
 
-            self.scheduler_step(i) # update SWA model if it exists
+            self.scheduler_step(i)  # update SWA model if it exists
             if (self.rank is None or self.rank == 0) and i % 10 == 0:
                 self.log_train(i, loss, timer)
 
-            del lr, hr, sr, loss # Release some GPU memory
+            del lr, hr, sr, loss  # Release some GPU memory
 
-            if (self.rank is None or self.rank == 0): # run inference in rank 0 process
-                is_swa = hasattr(self, 'swa_model') and (i+1) > self.swa_start
-                if (i+1) % self.cfg.SOLVER.TEST_EVERY == 0:
-                    self.test(i+1, is_swa=is_swa)
+            if (self.rank is None or self.rank == 0):  # run inference in rank 0 process
+                is_swa = hasattr(self, 'swa_model') and (i + 1) > self.swa_start
+                if (i + 1) % self.cfg.SOLVER.TEST_EVERY == 0:
+                    self.test(i + 1, is_swa=is_swa)
                     self.model.train()
 
-                if (i+1) % self.cfg.SOLVER.ITERATION_SAVE == 0:
-                    self.ckp.save(self, i+1, False, self.iter_start, is_swa,
-                                  iter_suffix = True)
+                if (i + 1) % self.cfg.SOLVER.ITERATION_SAVE == 0:
+                    self.ckp.save(self, i + 1, False, self.iter_start, is_swa,
+                                  iter_suffix=True)
 
         # save stochastic weight averaging model
         self.maybe_save_swa_model()
@@ -104,10 +105,10 @@ class Trainer():
     def log_train(self, i, loss, timer):
         lr = self.optimizer.param_groups[0]['lr']
         total_time = timer.toc()
-        avg_itertime = total_time / (i+1-self.iter_start)
+        avg_itertime = total_time / (i + 1 - self.iter_start)
         est_timeleft = avg_itertime * (self.iteration_total - i) / 3600
         print(
-            "[Iteration %05d] Loss: %.5f, LR: %.5f, " % (i+1, loss.item(), lr)
+            "[Iteration %05d] Loss: %.5f, LR: %.5f, " % (i + 1, loss.item(), lr)
             + "Iter time: %.4fs, Total time: %.2fh, Time Left %.2fh." % (
                 avg_itertime, total_time / 3600, est_timeleft))
 
@@ -195,7 +196,7 @@ class Trainer():
                         self.best_val_score = best[0][idx_data, idx_scale]
                         is_best = True
                     self.ckp.save(self, iteration, is_best, self.iter_start,
-                                  is_swa = is_swa)
+                                  is_swa=is_swa)
 
                 self.ckp.write_log(
                     'Total: {:.2f}s\n'.format(timer_test.toc()), refresh=True)

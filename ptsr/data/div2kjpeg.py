@@ -2,6 +2,7 @@ import os
 from ptsr.data import srdata
 from ptsr.data import div2k
 
+
 class DIV2KJPEG(div2k.DIV2K):
     def __init__(self, cfg, name='', train=True, benchmark=False):
         self.q_factor = int(name.replace('DIV2K-Q', ''))
@@ -17,4 +18,3 @@ class DIV2KJPEG(div2k.DIV2K):
         )
         if self.input_large: self.dir_lr += 'L'
         self.ext = ('.png', '.jpg')
-

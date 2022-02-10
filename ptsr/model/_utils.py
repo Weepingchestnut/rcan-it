@@ -4,15 +4,18 @@ import torch.nn.functional as F
 
 try:
     from detectron2.layers import ModulatedDeformConv
+
     DF_CONV_READY = True
+
+
     class DeformConv(nn.Module):
-        def __init__(self, in_planes: int, out_planes: int, kernel_size: int = 3, 
-            stride: int = 1, padding: int = 1, groups: int = 1, dilation: int = 1, 
-            bias: bool = False) -> None:
+        def __init__(self, in_planes: int, out_planes: int, kernel_size: int = 3,
+                     stride: int = 1, padding: int = 1, groups: int = 1, dilation: int = 1,
+                     bias: bool = False) -> None:
             super().__init__()
-            self.df_conv = ModulatedDeformConv(in_planes, out_planes, 
-                kernel_size=kernel_size, stride=stride, padding=padding,
-                groups=groups, bias=bias, dilation=dilation)
+            self.df_conv = ModulatedDeformConv(in_planes, out_planes,
+                                               kernel_size=kernel_size, stride=stride, padding=padding,
+                                               groups=groups, bias=bias, dilation=dilation)
             self.conv_offset = conv3x3(in_planes, 27, bias=True)
 
         def forward(self, x):

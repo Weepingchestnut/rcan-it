@@ -18,7 +18,7 @@ class MyConcatDataset(ConcatDataset):
 
 class Data:
     def __init__(self, cfg):
-        if (cfg.DATASET.FINETUNE.ENABLED):
+        if cfg.DATASET.FINETUNE.ENABLED:
             data_train = cfg.DATASET.FINETUNE.DATA
             print("Using Dataset(s): " + ','.join(data_train) + " for finetuning\n")
         else:
@@ -49,9 +49,9 @@ class Data:
         self.loader_test = []
         datatest = []
 
-        if (cfg.SOLVER.TEST_EVERY and not cfg.SOLVER.TEST_ONLY):
+        if cfg.SOLVER.TEST_EVERY and not cfg.SOLVER.TEST_ONLY:
             datatest = cfg.DATASET.DATA_VAL
-        elif (cfg.SOLVER.TEST_ONLY):
+        elif cfg.SOLVER.TEST_ONLY:
             datatest = cfg.DATASET.DATA_TEST
 
         for d in datatest:

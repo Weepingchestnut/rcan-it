@@ -22,4 +22,5 @@ class DF2K(srdata.SRData):
         super(DF2K, self)._set_filesystem(dir_data)
         self.dir_hr = os.path.join(self.apath, 'DF2K_train_HR')
         self.dir_lr = os.path.join(self.apath, 'DF2K_train_LR_bicubic')
-        if self.input_large: self.dir_lr += 'L'
+        if self.input_large:
+            self.dir_lr += 'L'

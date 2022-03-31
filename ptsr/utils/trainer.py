@@ -14,7 +14,7 @@ from .solver.build import build_swa_model
 from ..data.common import Mixup
 
 
-class Trainer():
+class Trainer:
     def __init__(self, cfg, rank, loader, model, loss, device, ckp=None):
         self.cfg = cfg
         self.rank = rank
@@ -58,7 +58,7 @@ class Trainer():
 
         timer = utility.timer()
         for i in range(self.iter_start, self.iteration_total):
-            if self.tail_only_iter > 0 and i > self.tail_only_iter:
+            if 0 < self.tail_only_iter < i:
                 self.freeze_tail(defrost=True)
                 self.tail_only_iter = -1  # only defrost once
 
@@ -68,7 +68,7 @@ class Trainer():
             if hasattr(self, 'mixuper'):
                 lr, hr = self.mixuper(lr, hr)
 
-            # full-precision when finetuning tail
+            # full-precision when fine-tuning tail
             autocast_enabled = self.mixed_fp and self.tail_only_iter <= 0
             with autocast(enabled=autocast_enabled):
                 sr = self.model(lr)
@@ -89,7 +89,7 @@ class Trainer():
 
             del lr, hr, sr, loss  # Release some GPU memory
 
-            if (self.rank is None or self.rank == 0):  # run inference in rank 0 process
+            if self.rank is None or self.rank == 0:  # run inference in rank 0 process
                 is_swa = hasattr(self, 'swa_model') and (i + 1) > self.swa_start
                 if (i + 1) % self.cfg.SOLVER.TEST_EVERY == 0:
                     self.test(i + 1, is_swa=is_swa)

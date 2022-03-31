@@ -16,7 +16,7 @@ import matplotlib
 matplotlib.use('Agg')
 
 
-class timer():
+class timer:
     def __init__(self):
         self.acc = 0
         self.tic()
@@ -43,7 +43,7 @@ class timer():
         self.acc = 0
 
 
-class checkpoint():
+class checkpoint:
     def __init__(self, cfg):
         self.cfg = cfg
         self.ok = True
@@ -52,9 +52,9 @@ class checkpoint():
 
         self.datatest = []
 
-        if (self.cfg.SOLVER.TEST_EVERY and not self.cfg.SOLVER.TEST_ONLY):
+        if self.cfg.SOLVER.TEST_EVERY and not self.cfg.SOLVER.TEST_ONLY:
             self.datatest = self.cfg.DATASET.DATA_VAL
-        elif (self.cfg.SOLVER.TEST_ONLY):
+        elif self.cfg.SOLVER.TEST_ONLY:
             self.datatest = self.cfg.DATASET.DATA_TEST
 
         time_stamp = datetime.datetime.now().strftime("_%b%d%y_%H%M")
@@ -115,7 +115,7 @@ class checkpoint():
             torch.save(state, filename)
 
     def load_model(self, pre_train, trainer, device, restart: bool = False,
-                   test_mode: bool = False, strict: bool = True, 
+                   test_mode: bool = False, strict: bool = True,
                    ignore: Optional[str] = None):
         if pre_train is None:
             return
@@ -123,7 +123,7 @@ class checkpoint():
         state = torch.load(pre_train, map_location=device)
         if isinstance(state['state_dict'], tuple):
             trainer.model.module.model.load_state_dict(
-                state['state_dict'][0], strict=strict)            
+                state['state_dict'][0], strict=strict)
         else:
             pretrained_dict = state['state_dict']
             if ignore is not None:
@@ -137,7 +137,7 @@ class checkpoint():
             if hasattr(trainer, 'mixed_fp') and trainer.mixed_fp and 'scaler' in state:
                 trainer.scaler.load_state_dict(state['scaler'])
 
-        del state # release GPU memory 
+        del state  # release GPU memory
 
     def add_log(self, log):
         self.log = torch.cat([self.log, log])

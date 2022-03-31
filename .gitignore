@@ -130,3 +130,4 @@ logs/
 others/
 outputs/
 tmpwdir/
+.idea/

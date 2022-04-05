@@ -79,7 +79,7 @@ class SRData(data.Dataset):
                         )
 
         if train:
-            self.n_train_samples = cfg.SOLVER.ITERATION_TOTAL * cfg.SOLVER.SAMPLES_PER_BATCH
+            self.n_train_samples = cfg.SOLVER.ITERATION_TOTAL * cfg.SOLVER.SAMPLES_PER_BATCH    # <==> the sample times of one epoch
             n_patches = cfg.SOLVER.SAMPLES_PER_BATCH * cfg.SOLVER.TEST_EVERY
             n_images = len(cfg.DATASET.DATA_TRAIN) * len(self.images_hr)
             if n_images == 0:

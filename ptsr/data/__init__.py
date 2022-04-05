@@ -43,7 +43,7 @@ class Data:
                 batch_size=cfg.SOLVER.SAMPLES_PER_BATCH,
                 shuffle=True,
                 pin_memory=bool(cfg.SYSTEM.NUM_GPU),
-                # distribute workers among mutiple processes
+                # distribute workers among multiple processes
                 num_workers=cfg.SYSTEM.NUM_CPU // cfg.SYSTEM.NUM_GPU)
 
         self.loader_test = []

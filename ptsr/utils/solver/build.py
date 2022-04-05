@@ -168,6 +168,7 @@ def build_optimizer(cfg: CfgNode, model: torch.nn.Module) -> torch.optim.Optimiz
     print('Optimizer: ', optimizer.__class__.__name__)
     return optimizer
 
+
 def _create_residual_name(cfg):
     if cfg.SOLVER.RESIDUAL_LR_FACTOR is None:
         return None, None

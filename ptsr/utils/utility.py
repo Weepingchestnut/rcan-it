@@ -63,7 +63,8 @@ class checkpoint:
                 cfg.LOG.SAVE = now
             self.dir = os.path.join('outputs', cfg.LOG.SAVE + time_stamp)
         else:
-            self.dir = os.path.join('outputs', cfg.LOG.LOAD + time_stamp)
+            # self.dir = os.path.join('outputs', cfg.LOG.LOAD + time_stamp)
+            self.dir = os.path.join('outputs', cfg.LOG.LOAD)
             if os.path.exists(self.dir):
                 self.log = torch.load(self.get_path('psnr_log.pt'))
                 print('Continue from epoch {}...'.format(
@@ -88,8 +89,10 @@ class checkpoint:
 
     def save(self, trainer, iteration, is_best=False, iter_start=0, is_swa=False, iter_suffix=False):
         self.save_model(self.get_path('model'), trainer, iteration, is_best, is_swa, iter_suffix)
-        self.plot_psnr(iteration, iter_start)
         torch.save(self.log, self.get_path('psnr_log.pt'))
+        self.plot_psnr(iteration, 0)
+        # self.plot_psnr(iteration, iter_start)
+        # torch.save(self.log, self.get_path('psnr_log.pt'))
 
     def save_model(self, apath, trainer, iteration: int, is_best: bool = False,
                    is_swa: bool = False, iter_suffix: bool = False):
@@ -151,9 +154,17 @@ class checkpoint:
 
     def plot_psnr(self, iteration, iter_start=0):
         intervel = self.cfg.SOLVER.TEST_EVERY
+        print("intervel:", intervel)
+        print("iteration({}) + 1 - iter_start({})".format(iteration, iter_start))
         num_points = (iteration + 1 - iter_start) // intervel
+        print("num_points:", num_points)
         axis = list(range(1, num_points+1))
+        print("axis: {}, type: {}".format(axis, type(axis)))
         axis = np.array(axis) * intervel + iter_start
+        print("axis: {}, type: {}".format(axis, type(axis)))
+        print("axis.shape:", axis.shape)
+        print("self.log.shape", self.log.shape)
+        print(self.log)
         for idx_data, d in enumerate(self.datatest):
             label = 'SR on {}'.format(d)
             fig = plt.figure()

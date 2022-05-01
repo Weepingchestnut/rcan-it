@@ -131,7 +131,7 @@ class SRData(data.Dataset):
                     print('Loading {}...'.format(f))
                 with open(f, 'rb') as _f:
                     ret = pickle.load(_f)
-                return ret
+                return ret[:len(l)]     # 读取指定图像数
             else:
                 return None
         else:

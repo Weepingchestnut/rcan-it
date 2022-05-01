@@ -103,31 +103,31 @@ class Model(nn.Module):
     def make_model(self, cfg):
         n = cfg.MODEL.N_RESGROUPS
         options = {
-            'n_resgroups': n,
-            'n_resblocks': cfg.MODEL.N_RESBLOCKS,
-            'out_conv': cfg.MODEL.OUT_CONV,
-            'planes': cfg.MODEL.PLANES,
-            'scale': cfg.DATASET.DATA_SCALE[0],
-            'block_type': cfg.MODEL.BLOCK_TYPE,
-            'short_skip': cfg.MODEL.SHORT_SKIP,
-            'channels': cfg.DATASET.CHANNELS,
-            'rgb_range': cfg.DATASET.RGB_RANGE,
-            'act_mode': cfg.MODEL.ACT_MODE,
-            'stochastic_depth': cfg.MODEL.STOCHASTIC_DEPTH,
-            'multFlag': cfg.MODEL.MULT_FLAG,
-            'reduction': cfg.MODEL.SE_REDUCTION,  # SE block
-            'affine_init_w': cfg.MODEL.AFFINE_INIT_W,
-            'df_conv': cfg.MODEL.DEFORM_CONV,  # Deformable convolution
-            'zero_inti_residual': cfg.MODEL.ZERO_INIT_RESIDUAL,
-            'res_scale': cfg.MODEL.RES_SCALE,  # Scale of residual connection
-            'res_scale_learnable': cfg.MODEL.RES_SCALE_LEARNABLE,
-            'normal_init_std': cfg.MODEL.NORMAL_INIT_STD,
+            'n_resgroups': n,   # 10
+            'n_resblocks': cfg.MODEL.N_RESBLOCKS,   # 20
+            'out_conv': cfg.MODEL.OUT_CONV,         # True
+            'planes': cfg.MODEL.PLANES,             # 64
+            'scale': cfg.DATASET.DATA_SCALE[0],     # 4
+            'block_type': cfg.MODEL.BLOCK_TYPE,     # rcan_block
+            'short_skip': cfg.MODEL.SHORT_SKIP,     # True
+            'channels': cfg.DATASET.CHANNELS,       # 3
+            'rgb_range': cfg.DATASET.RGB_RANGE,     # 255
+            'act_mode': cfg.MODEL.ACT_MODE,         # 'silu'
+            'stochastic_depth': cfg.MODEL.STOCHASTIC_DEPTH,     # False
+            'multFlag': cfg.MODEL.MULT_FLAG,        # True
+            'reduction': cfg.MODEL.SE_REDUCTION,    # 16
+            'affine_init_w': cfg.MODEL.AFFINE_INIT_W,               # 0.1
+            'df_conv': cfg.MODEL.DEFORM_CONV,       # Deformable convolution False
+            'zero_inti_residual': cfg.MODEL.ZERO_INIT_RESIDUAL,     # True
+            'res_scale': cfg.MODEL.RES_SCALE,       # Scale of residual connection 0.1
+            'res_scale_learnable': cfg.MODEL.RES_SCALE_LEARNABLE,   # False
+            'normal_init_std': cfg.MODEL.NORMAL_INIT_STD,           # None
         }
 
         # build a probability list for stochastic depth
-        prob = cfg.MODEL.STOCHASTIC_DEPTH_PROB
+        prob = cfg.MODEL.STOCHASTIC_DEPTH_PROB      # None
         if prob is None:
-            options['prob'] = [0.5] * n
+            options['prob'] = [0.5] * n             # [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
         elif isinstance(prob, float):
             options['prob'] = [prob] * n
         elif isinstance(prob, list):

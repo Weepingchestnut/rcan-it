@@ -1,9 +1,8 @@
 import os
 from ptsr.data import srdata
 
-
-class DIV2K(srdata.SRData):
-    def __init__(self, cfg, name='DIV2K', train=True, benchmark=False):
+class CustomData(srdata.SRData):
+    def __init__(self, cfg, name='MyData', train=True, benchmark=False):
         data_range = cfg.DATASET.DATA_RANGE
         if train:
             data_range = data_range[0]
@@ -19,8 +18,7 @@ class DIV2K(srdata.SRData):
         )
 
     def _set_filesystem(self, dir_data):
-        super(DIV2K, self)._set_filesystem(dir_data)
-        self.dir_hr = os.path.join(self.apath, 'DIV2K_train_HR')
-        self.dir_lr = os.path.join(self.apath, 'DIV2K_train_LR_bicubic')
-        if self.input_large:
-            self.dir_lr += 'L'
+        super()._set_filesystem(dir_data)
+        self.dir_hr = os.path.join(self.apath, self.name + '_train_HR')
+        self.dir_lr = os.path.join(self.apath, self.name + '_train_LR_bicubic')
+        if self.input_large: self.dir_lr += 'L'

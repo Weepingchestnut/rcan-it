@@ -1,12 +1,18 @@
 MODEL:
-  DEFORM_CONV: True
+#  DEFORM_CONV: True
+  ENSEMBLE:
+    ENABLED: True
 #  PRE_TRAIN: outputs/RCAN_x4_Apr0622_1315/model/model_best.pth.tar
+  PRE_TRAIN: RCAN_pretrained/RCANit_x4.pth.tar
 DATASET:
+  DATA_TEST: ['DIV2K', 'Set5', 'Set14', 'B100', 'Urban100']
   DATA_SCALE: [4]
   OUT_PATCH_SIZE: 192
   DATA_RANGE: [[1, 800], [801, 805]]
+  CHOP: True
 LOG:
   SAVE: RCAN_x4
 #  LOAD: RCAN_x4_Apr0622_1315
 SOLVER:
-  TEST_EVERY: 20
+  TEST_ONLY: True
+#  TEST_EVERY: 20
